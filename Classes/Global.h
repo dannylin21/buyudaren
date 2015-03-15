@@ -14,4 +14,9 @@ typedef struct
 }CanTypeConf;
 
 typedef std::function<void(void)> SampleCallBack;
+#define UI_INDEX 99
+#define MAP_INDEX 0
+#define FISH_INDEX 1
+#define MAKE_INDEX 100
+#define MAX_INDEX 10000
 #endif

@@ -8,12 +8,14 @@ USING_NS_CC;
 class TipWin : public cocos2d::Node
 {
 public:
-	static void ShowTip();
+	static void ShowTip(int stype);
 	void CLosePop();
 	bool Init();
 private:
+	CC_SYNTHESIZE(int,m_type,PopType);
+	int m_curGold;
 	void Get();
 	void AddFlash();
-	
+	void LoadGift();
 };
 #endif

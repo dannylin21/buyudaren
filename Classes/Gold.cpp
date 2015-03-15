@@ -27,10 +27,10 @@ Gold::~Gold(void)
 {
 }
 
-void Gold::ShowGold(Vec2 spos, Vec3 epos, float tm)
+void Gold::ShowGold(Vec2 spos, Vec2 epos, float tm)
 {
 	this->setPosition(spos);
-	MoveBy* moveAction = MoveBy::create(tm, Vec3(0, 20, 0));
+	MoveBy* moveAction = MoveBy::create(tm, Vec2(0, 20));
 	MoveTo* moveToAction = MoveTo::create(1, epos);
 	CallFunc *call = CallFunc::create(std::bind(&Gold::DeleteMe,this));	
 	auto *sq= Sequence::create(moveAction,moveToAction,call ,NULL);

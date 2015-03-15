@@ -1,4 +1,5 @@
 #include "PropButton.h"
+#include "TipWin.h"
 
 USING_NS_CC;
 

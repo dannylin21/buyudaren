@@ -10,7 +10,7 @@ public:
 	Gold(void);
 	~Gold(void);
 
-	void ShowGold(Vec2 spos, Vec3 epos, float tm);
+	void ShowGold(Vec2 spos, Vec2 epos, float tm);
 	void DeleteMe();
 public:
 	Vec3 targetPos;

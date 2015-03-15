@@ -146,5 +146,5 @@ void FishPlayer::fishDead(Fish *fish)
 
 void FishPlayer::start()
 {
-	AddFish(12,7);
+	AddFish(12,4);
 }

@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "TipWin.h"
+#include "GameScene.h"
 
 USING_NS_CC;
 
@@ -22,7 +23,7 @@ Player* Player::getInstance()
 	return m_pInstance;
 }
 Player::Player():m_level(1),m_gold(150),
-	m_totalgold(0),m_PopGold(0),m_getReward(0)
+	m_totalgold(0),m_PopGold(0),m_getReward(0),m_loginGet(false)
 {
 	
 }
@@ -70,7 +71,7 @@ void Player::AddGold(int Increse)
 	if(m_PopGold > 1500)
 	{
 		m_PopGold = 0;
-		TipWin::ShowTip();
+	//	TipWin::ShowTip(0);
 	}
 }
 
@@ -80,6 +81,7 @@ void Player::SavePlayInfo()
 	ts->gold = this->m_gold;
 	ts->hadGold = this->m_totalgold;
 	ts->level = this->m_level;
+	ts->GetReward = this->m_getReward;
 	FileOperation::SaveRoleInfo(ts);
 	delete ts;
 	ts = nullptr;
@@ -91,7 +93,7 @@ void PlayerExp::init(Layer *GameScene)
 	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("images/Plist/head/head.plist");
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	auto layer = Layer::create();	
-	GameScene->addChild(layer);
+	GameScene::m_GameMain->m_UILayer->addChild(layer);
 	layer->setPosition(120,visibleSize.height * 0.9f);
 	auto head = Sprite::create("images/Scene/GameScene/headbg.png");
 	layer->addChild(head);

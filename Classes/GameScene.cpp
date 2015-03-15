@@ -1,6 +1,8 @@
 #include "GameScene.h"
 #include "PropButton.h"
 #include "TipWin.h"
+#include "ShopWin.h"
+#include "luopan.h"
 
 
 USING_NS_CC;
@@ -21,6 +23,10 @@ bool GameScene::init()
         return false;
     }
 	m_GameMain = this;
+	m_UILayer = Layer::create();
+	m_mapLayer = Layer::create();
+	this->addChild(m_UILayer,UI_INDEX);
+	this->addChild(m_mapLayer,MAP_INDEX);
     InitBackGroud();
     LoadPlayerInfo();
 	LoadCannon();
@@ -42,6 +48,7 @@ void GameScene::onEnter()
 	listener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+	BottomGold();
 }
 
 void GameScene::LoadPlayerInfo()
@@ -68,26 +75,37 @@ void GameScene::InitBackGroud()
 {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	auto layerMap = Layer::create();
-	auto Item3 = MenuItemImage::create("images/Scene/GameScene/btn_gift.png","images/Scene/GameScene/btn_gift.png",
-		[&](Object *sender) {
-			this->ChangeCanno(2);
-	});
-	auto ICONmenus = Menu::create(Item3,NULL);
-	layerMap->addChild(ICONmenus,1);
-	ICONmenus->setPosition(Vec2(visibleSize.width * 0.9f + origin.x, visibleSize.height* 0.9f + origin.y));
 	Sprite *bg = Sprite::create("images/FishBg/fishBg_02.png");
 	bg->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-	layerMap->addChild(bg,0);
+	m_mapLayer->addChild(bg);
+	auto Item3 = MenuItemImage::create("images/Scene/GameScene/btn_gift.png","images/Scene/GameScene/btn_gift.png",
+		[&](Object *sender) {
+			this->MainMenuCallBack(2);
+	});
+	auto Item4 = MenuItemImage::create("images/Scene/GameScene/btn_shop.png","images/Scene/GameScene/btn_shop.png",
+		[&](Object *sender) {
+			this->MainMenuCallBack(1);
+	});
+	auto bgshop = Sprite::create("images/Scene/GameScene/shopLight.png");
+	m_UILayer->addChild(bgshop);
+	bgshop->setPosition(885,580);
+	FadeOut *out = FadeOut::create(1.0f);
+	FadeIn *inAc = FadeIn::create(1.0f);
+	auto seq = Sequence::create(out,inAc,nullptr);
+	bgshop->runAction(RepeatForever::create(seq));
+	auto ICONmenus = Menu::create(Item3,Item4,NULL);
+	m_UILayer->addChild(ICONmenus);
+	Item4->setPosition(30,10);
+	Item3->setPosition(-80,10);
+	ICONmenus->setPosition(850,570);
 	
-	this->addChild(layerMap,0);
-
+	
 
 	m_bottom = Layer::create();
 	Sprite *pBottomBar=Sprite::create("images/Scene/GameScene/batteryBg.png");
 	m_bottom->addChild(pBottomBar);
 	m_bottom->setPosition(Vec2(visibleSize.width/2 + origin.x, 30));
-    this->addChild(m_bottom,2);
+    m_UILayer->addChild(m_bottom);
 	m_bottom->setPosition(Vec2(visibleSize.width/2 + origin.x,visibleSize.height * 0.05 + origin.y));
 	auto userItem = MenuItemImage::create("images/Scene/GameScene/btn_sub_up.png","images/Scene/GameScene/btn_sub_down.png",
 		[&](Object *sender) {	
@@ -136,7 +154,7 @@ void GameScene::initFishLayer()
 {
 	srand((unsigned int)time(NULL));
     m_FishPlayer = FishPlayer::createFishPlayer(this);
-    this->addChild(m_FishPlayer,1);
+    this->addChild(m_FishPlayer,FISH_INDEX);
     m_FishPlayer->start();
 }
 
@@ -223,5 +241,33 @@ void GameScene::updateGame(float dt)
 	if(caught && curBomb != NULL)
 	{
 		curBomb->explode();
+	}
+}
+
+void GameScene::BottomGold()
+{
+	m_bottomSprie = MenuItemImage::create("images/Scene/GameScene/btn_coin_up.png","images/Scene/GameScene/btn_coin_down.png",[&](Object* Sender){
+		ShopWin::ShowShop();
+	});
+	auto menu = Menu::create(m_bottomSprie,nullptr);
+	m_bottomgold = LabelAtlas::create("628","images/Number/prop_num.png",16,21,'0');
+	this->m_bottom->addChild(menu);
+	menu->setPosition(-261,-12);
+	this->m_bottom->addChild(m_bottomgold,2);
+	m_bottomgold->setPosition(-300,-30);
+}
+
+void GameScene::MainMenuCallBack(int Flag)
+{
+	switch (Flag)
+	{
+	case 1:
+		ShopWin::ShowShop();
+		break;
+	case 2:
+		CLuoPan::ShowLuoPan();
+		break;
+	default:
+		break;
 	}
 }

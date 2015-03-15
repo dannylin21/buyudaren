@@ -15,7 +15,6 @@ private:
 	void update(float dt);
 	void LoadMenu();
 	void LoadRewardDaly();
-	void RemoveReward(Ref *sender);
 public:
 	static cocos2d::Scene* createLoadScene();
 	virtual bool init();

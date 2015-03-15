@@ -233,10 +233,10 @@ void Fish::showCaught(int DesHp)
 			this->setHp(0);
 			Gold* gold = new Gold();
 			GameScene::m_GameMain->addChild(gold);
-			gold->ShowGold(_fishSprite->getPosition() + Vec2(-30,0), Vec3(200,-10,0), 0.3);
+			gold->ShowGold(_fishSprite->getPosition() + Vec2(-30,0), Vec2(200,-10), 0.3);
 			gold = new Gold();
 			GameScene::m_GameMain->addChild(gold);
-			gold->ShowGold(_fishSprite->getPosition() + Vec2(30,0), Vec3(200,-10,0), 0.5);
+			gold->ShowGold(_fishSprite->getPosition() + Vec2(30,0), Vec2(200,-10), 0.5);
 			AudioEngine::play2d("music/eft_coinanimate.mp3");
 			Player::getInstance()->AddGold(this->getFishGold());
 			this->_fishState = 3;
@@ -247,7 +247,7 @@ void Fish::showCaught(int DesHp)
 			Vector<SpriteFrame *> veccatch;
 			for (int i=1;i<swimCount;i++)
 			{
-				sprintf(pngName,"fish%03d_swim_%03d.png",Fish::fishCOnfMap[fishIndex-1].m_type,i);
+				sprintf(pngName,"fish%03d_catch_%03d.png",Fish::fishCOnfMap[fishIndex-1].m_type,i);
 				SpriteFrame* tempFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(pngName);
 				if(tempFrame != NULL)
 				{
@@ -257,11 +257,12 @@ void Fish::showCaught(int DesHp)
 			if(veccatch.size() > 0)
 			{
 				Animation* animation = Animation::createWithSpriteFrames(veccatch,0.3f);
-				animation->setRestoreOriginalFrame(false);
+				animation->setRestoreOriginalFrame(true);
 				Animate* animat = Animate::create(animation);
 				CallFunc *call = CallFunc::create(std::bind(&Fish::removeSelf,this));		
-				auto *sq= Sequence::create(RepeatForever::create(animat),call,NULL);
-				this->_fishSprite->runAction(sq);
+				auto *sq= Sequence::create(animat,call,NULL);
+				//EaseInOut::create(animat,3.0f)
+				this->_fishSprite->runAction(RepeatForever::create(sq));
 			}
 			else
 			{

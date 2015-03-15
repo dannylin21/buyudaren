@@ -18,6 +18,7 @@ public:
 	CC_SYNTHESIZE(int,m_getReward,GetReward);
 	void SavePlayInfo();
 	SampleCallBack m_callBack;
+	CC_SYNTHESIZE(bool, m_loginGet,LoginGet);
 private:
 	cocos2d::ValueMapIntKey m_Canbullet;
 	int m_PopGold;

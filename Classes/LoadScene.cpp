@@ -36,13 +36,13 @@ void LoadScene::initBackGroud()
 	m_pariticle->setPosition(visibleSize.width * 0.2f,visibleSize.height * 0.2f);
 	m_pariticle->setPositionType(ParticleSystem::PositionType::GROUPED);
 	m_pariticle->setAutoRemoveOnFinish(true);
-	this->addChild(m_pariticle,10);
+	this->addChild(m_pariticle);
 
 	ParticleSystem *m_pariticle1=ParticleSystemQuad::create("particles/bubblePar_right.plist");
 	m_pariticle1->setPosition(visibleSize.width * 0.8f,visibleSize.height * 0.2f);
 	m_pariticle1->setPositionType(ParticleSystem::PositionType::GROUPED);
 	m_pariticle1->setAutoRemoveOnFinish(true);
-	this->addChild(m_pariticle1,10);
+	this->addChild(m_pariticle1);
 	for(int i =1;i<8;i++)
 	{
 		SpriteFrameCache::getInstance()->addSpriteFramesWithFile(String::createWithFormat("fishFrame/fish%d.plist",i)->getCString());
@@ -88,7 +88,8 @@ void LoadScene::update(float dt)
 		loadGold->setPosition(Vec2(visibleSize.width * 0.9f,visibleSize.height * 0.9f));
 		this->addChild(loadGold);
 		char AllGold[10]={0};
-		sprintf(AllGold,"%d",Player::getInstance()->getCurGold());
+		int CurGold = Player::getInstance()->getCurGold();
+		sprintf(AllGold,"%d",CurGold);
 		LabelAtlas *labelatlas = LabelAtlas::create(AllGold,"images/Number/num_gold.png",14,22,'0');
 		labelatlas->setPosition(Vec2(visibleSize.width * 0.9f,visibleSize.height * 0.88f));
 		this->addChild(labelatlas);
@@ -99,51 +100,23 @@ void LoadScene::update(float dt)
 void LoadScene::LoadMenu()
 {
 	auto userItem = MenuItemImage::create("images/Scene/MainMenuScene/btn_start.png","images/Scene/MainMenuScene/btn_start.png",
-		[](Object *sender) {
+		[&](Object *sender) {
 			Scene *scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(CCTransitionCrossFade::create(1.2f,scene));
 	});
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 	m_menus = Menu::createWithItem(userItem);
 	m_menus->setPosition(visibleSize.width * 0.5f,visibleSize.height * 0.4f);
-	//m_menus->setEnabled(false);
 	this->addChild(m_menus);
 	LoadRewardDaly();
 }
 
 void LoadScene::LoadRewardDaly()
 {
-	RewardDialog::PopReward(this);
-	/*
-	m_rewardLayer = Layer::create();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	auto make = Sprite::create("images/Scene/DailyScene/bgm.png");
+	this->addChild(make);
+	make->setOpacity(120);
 	Size visibleSize = Director::getInstance()->getVisibleSize();
-	auto *m_reward = Sprite::create("images/Scene/DailyScene/bg.png");
-	m_reward->setPosition(visibleSize.width * 0.5f,visibleSize.height * 0.5f);
-	m_rewardLayer->addChild(m_reward);
-
-	auto CloseItem = MenuItemImage::create("images/Common/btn_close2.png","images/Common/btn_close1.png",this,menu_selector(LoadScene::RemoveReward));
-	auto GetBtn = MenuItemImage::create("images/Scene/DailyScene/btn_get.png","images/Scene/DailyScene/btn_get.png",[&](Object* sender)
-	{
-
-	});
-	auto *m_rewardMenu = Menu::create(CloseItem,GetBtn,nullptr);
-	m_rewardMenu->setPosition(visibleSize.width * 0.5f,visibleSize.height * 0.5f);
-	m_rewardLayer->addChild(m_rewardMenu);
-	GetBtn->setPosition(0,-140);
-	CloseItem->setPosition(430,70);
-	this->addChild(m_rewardLayer);
-	m_rewardLayer->setPosition(visibleSize.width * 0.005f, visibleSize.height * 0.001f);
-	*/
-	
-	
-	//auto *
-}
-
-
-
-void LoadScene::RemoveReward(Ref *sender)
-{
-	m_rewardLayer->removeFromParentAndCleanup(true);
-	m_menus->setEnabled(true);
+	make->setPosition(visibleSize.width * 0.5f,visibleSize.height * 0.5f);
+	RewardDialog::PopReward(this,make);
 }

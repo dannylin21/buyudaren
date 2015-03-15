@@ -20,11 +20,14 @@ private:
 	void LoadCannon();
 	cocos2d::Rect cacleRect(cocos2d::Rect rc,float xr,float yr);
 	void ChangeCanno(int tag);
+	void BottomGold();
 	void fire(float);
 	void BackMusicOn();
 public:
 	cocos2d::Vector<Bomb *> m_pBullets;
 	cocos2d::Vector<Fish *> m_pFishes;
+	cocos2d::LabelAtlas *m_bottomgold;
+	cocos2d::MenuItemImage *m_bottomSprie;
 	void setCannon(int stype);
 	void MusicOn();
 	virtual void onEnter();
@@ -35,11 +38,13 @@ public:
 	static cocos2d::Scene* createScene();
 	static bool duangOpen;
 	static GameScene* m_GameMain;
+	cocos2d::Layer *m_UILayer,*m_mapLayer;
 	virtual bool init();
 	void update(float dt);
 	void updateGame(float dt);
 	cocos2d::Layer *m_bottom;
 	CREATE_FUNC(GameScene);
+	void MainMenuCallBack(int Flag);
 };
 
 #endif // __GAMESCENE_H__
