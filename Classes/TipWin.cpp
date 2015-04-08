@@ -1,17 +1,26 @@
-#include "TipWin.h"
+﻿#include "TipWin.h"
 #include "GameScene.h"
+#include "LoadScene.h"
 
 USING_NS_CC;
 
-bool TipWin::Init()
+bool TipWin::Init(bool GlobalOpen)
 {
 	auto bg = Sprite::create("images/Scene/GiftScene/bg.png");
 	this->addChild(bg);
 	auto BtnItem = MenuItemImage::create("images/Scene/GiftScene/btn_got.png","images/Scene/GiftScene/btn_got.png",
-		[&](Object *sender) {
-		this->Get();	
+		[=](Ref *sender) {
+		if(GlobalOpen)
+		{
+			G_MainGame->m_tipOpen = false;
+		}
+		this->Get();
 	});
-	auto BtnClose = MenuItemImage::create("images/Common/btn_close2.png","images/Common/btn_close2.png",[&](Object *sender){
+	auto BtnClose = MenuItemImage::create("images/Common/btn_close2.png","images/Common/btn_close2.png",[=](Ref *sender){
+		if(GlobalOpen)
+		{
+			G_MainGame->m_tipOpen = false;
+		}
 		this->CLosePop();
 	});
 
@@ -31,21 +40,6 @@ bool TipWin::Init()
 	auto NoStop = Sprite::create("images/Scene/GiftScene/word_top.png");
 	this->addChild(NoStop,1);
 	NoStop->setPosition(-10,50);
-	ParticleSystemQuad*    _leftemitter;
-	_leftemitter = ParticleSystemQuad::create("particles/coin_left.plist");
-	_leftemitter->retain();
-	addChild(_leftemitter, -1);
-	_leftemitter->setPosition(-50,0);
-	ParticleSystemQuad*    _rightemitter;
-	_rightemitter = ParticleSystemQuad::create("particles/coin_right.plist");
-	_rightemitter->retain();
-	addChild(_rightemitter, -1);
-	_leftemitter->setPosition(-50,0);
-	ParticleSystemQuad*    _midemitter;
-	_midemitter = ParticleSystemQuad::create("particles/coin_mid.plist");
-	_midemitter->retain();
-	addChild(_midemitter, -1);
-	_midemitter->setPosition(-50,0);
 	AddFlash();
 	return true;
 }
@@ -86,7 +80,11 @@ void TipWin::LoadGift()
 			break;
 		}
 	}
-	else
+	else if(m_type == 3)
+	{
+		Show12();
+	}
+	else 
 	{
 		switch (rand() % 3)
 		{
@@ -102,6 +100,10 @@ void TipWin::LoadGift()
 				Prop->setScale(0.8f,0.8f);
 				numbp->setPosition(20,-100);
 				XProp->setPosition(-5,-90);
+                auto rmb = Label::createWithSystemFont("仅需6元", "Arial", 20);
+                this->addChild(rmb,2);
+                rmb->setColor(Color3B(170,99,85));
+                rmb->setPosition(Vec2(-100,-40));
 			}
 			break;
 		case 1://10
@@ -112,42 +114,30 @@ void TipWin::LoadGift()
 				Coin4->setPosition(0,-25);
 				this->addChild(Labe,5);
 				Labe->setPosition(-30,-105);
+                auto rmb = Label::createWithSystemFont("仅需10元", "Arial", 20);
+                this->addChild(rmb,2);
+                rmb->setColor(Color3B(170,99,85));
+                rmb->setPosition(Vec2(-100,-40));
 			}
 			break;
 		case 2://12
-			{
-				auto Coin4 = Sprite::create("images/Scene/ShopScene/money/coin6.png");
-				auto Labe = LabelAtlas::create("38000","images/Number/gift_coin.png",22,28,'0');
-				auto Give = Sprite::create("images/Scene/GiftScene/give.png");
-				auto Prop = Sprite::create("images/Scene/GameScene/prop007.png");
-				auto XProp = Sprite::create("images/Number/x_gift.png");
-				auto numbp = LabelAtlas::create("2","images/Number/gift_prop.png",20,30,'0');
-				this->addChild(numbp,5);
-				this->addChild(XProp,5);
-				this->addChild(Coin4,5);
-				this->addChild(Give,5);
-				this->addChild(Prop,5);
-				Prop->setPosition(147,-55);
-				Prop->setScale(0.5f,0.5f);
-				Give->setPosition(80,-45);
-				Give->setRotation(25.f);
-				Coin4->setPosition(0,-25);
-				Coin4->setScale(0.8f,0.8f);
-				this->addChild(Labe,5);
-				Labe->setPosition(-50,-105);
-				numbp->setPosition(150,-120);
-				XProp->setPosition(130,-110);
-			}
+			Show12();
 			break;
 		}
 	}
 }
 
-void TipWin::ShowTip(int stype)
+
+void TipWin::ShowTip(int sType)
+{
+	ShowTip(sType,false);
+}
+
+void TipWin::ShowTip(int stype, bool IsGlobal)
 {
 	TipWin *popwin = new TipWin();
 	popwin->setPopType(stype);
-	if(popwin&&popwin->Init())
+	if (popwin&&popwin->Init(IsGlobal))
 	{
 		Size visibleSize = Director::getInstance()->getVisibleSize();
 		popwin->setPosition(Vec2(visibleSize.width * 0.5f,visibleSize.height * 0.5f));
@@ -156,13 +146,26 @@ void TipWin::ShowTip(int stype)
 		auto raction = ScaleTo::create(0.1, 1,1,1);
 		auto q = Sequence::create(action, raction, NULL);
 		popwin->runAction(q);
-		GameScene::m_GameMain->addChild(popwin,1000);
+		if(G_MainGame)
+		{
+			G_MainGame->addChild(popwin,1000);
+		}
+		else if(LoadScene::m_loadScene)
+		{
+			LoadScene::m_loadScene->addChild(popwin,1000);
+		}
 	}
+
 }
 
 void TipWin::CLosePop()
 {
-	this->removeFromParentAndCleanup(true);
+	BUBBLE;
+	auto action = ScaleTo::create(0.15, 1.3, 1.3, 1);
+	auto raction = ScaleTo::create(0.07, 0.5, 0.5, 1);
+	CallFunc *call = CallFunc::create(std::bind(&TipWin::CloseAnimation, this));
+	auto q = Sequence::create(action, raction, call, NULL);
+	this->runAction(q);
 }
 
 void TipWin::Get()
@@ -175,3 +178,35 @@ void TipWin::Get()
 	CLosePop();
 }
 
+void TipWin::Show12()
+{
+	auto Coin4 = Sprite::create("images/Scene/ShopScene/money/coin6.png");
+	auto Labe = LabelAtlas::create("38000","images/Number/gift_coin.png",22,28,'0');
+	auto Give = Sprite::create("images/Scene/GiftScene/give.png");
+	auto Prop = Sprite::create("images/Scene/GameScene/prop007.png");
+	auto XProp = Sprite::create("images/Number/x_gift.png");
+	auto numbp = LabelAtlas::create("2","images/Number/gift_prop.png",20,30,'0');
+	this->addChild(numbp,5);
+	this->addChild(XProp,5);
+	this->addChild(Coin4,5);
+	this->addChild(Give,5);
+	this->addChild(Prop,5);
+	Prop->setPosition(147,-55);
+	Prop->setScale(0.5f,0.5f);
+	Give->setPosition(80,-45);
+	Give->setRotation(25.f);
+	Coin4->setPosition(0,-25);
+	Coin4->setScale(0.8f,0.8f);
+	this->addChild(Labe,5);
+	Labe->setPosition(-50,-105);
+	numbp->setPosition(150,-120);
+	XProp->setPosition(130,-110);
+    auto rmb = Label::createWithSystemFont("仅需12元", "Arial", 20);
+    this->addChild(rmb,2);
+    rmb->setColor(Color3B(170,99,85));
+    rmb->setPosition(Vec2(-100,-40));
+}
+void TipWin::CloseAnimation()
+{
+	this->removeFromParentAndCleanup(true);
+}

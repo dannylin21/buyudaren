@@ -1,6 +1,8 @@
 #ifndef __H_GLOBAL_H__
 #define __H_GLOBAL_H__
+#include "cocos2d.h"
 #include <string>
+#include "publicAudio.h"
 using namespace std;
 typedef struct 
 {
@@ -11,6 +13,8 @@ typedef struct
 	std::string m_bullet;
 	std::string m_taileffect;
 	int tailnum;
+	int radio;
+	float speed;
 }CanTypeConf;
 
 typedef std::function<void(void)> SampleCallBack;
@@ -19,4 +23,11 @@ typedef std::function<void(void)> SampleCallBack;
 #define FISH_INDEX 1
 #define MAKE_INDEX 100
 #define MAX_INDEX 10000
+
+class GameScene;
+extern GameScene*			G_MainGame;
+
+#define WAVESTATE		1
+#define NORMALSTATE		0
+#define NORMALBAZIE     3
 #endif

@@ -19,8 +19,5 @@ private:
 	void CloseReward(Ref *sender);
 	void LoadItem();
 	void GetItem();
-
-
 };
-
 #endif

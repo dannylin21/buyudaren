@@ -1,6 +1,6 @@
-#include "DailyReward.h"
+﻿#include "DailyReward.h"
 #include "Player.h"
-
+#include "TipWin.h"
 USING_NS_CC;
 
 HasGet RewardDialog::m_HaveGet[7] = 
@@ -9,9 +9,9 @@ HasGet RewardDialog::m_HaveGet[7] =
 	{-240,-55},
 	{-118,-55},
 	{-2,-55},
-	{130,-55},
-	{250,-55},
-	{370,-55}
+	{120,-55},
+	{240,-55},
+	{364,-55}
 };
 
 void RewardDialog::PopReward(Layer *Parent,Sprite *make)
@@ -45,22 +45,50 @@ bool RewardDialog::init()
 	});
 	auto m_rewardMenu = Menu::create(CloseItem,GetBtn,nullptr);
 	m_rewardMenu->setPosition(0,0);
-	this->addChild(m_rewardMenu);
+	this->addChild(m_rewardMenu,3);
 	GetBtn->setPosition(0,-140);
 	CloseItem->setPosition(430,70);
 	LoadItem();
-	auto Effects = ScaleTo::create(0.3f,1.2f,1.2f);
-	auto Effects1=ScaleTo::create(0.3f,1.0f,1.f);
+	auto Effects = ScaleTo::create(0.5f,1.2f,1.2f);
+	auto Effects1=ScaleTo::create(0.5f,1.0f,1.f);
 	auto seq = Sequence::create(Effects,Effects1,NULL);
 	GetBtn->runAction(RepeatForever::create(seq));
+    int CurGet = Player::getInstance()->getGetReward();
+    LabelTTF *rmb=nullptr;
+    switch (CurGet) {
+        case 1:
+            rmb = LabelTTF::create("仅需8元", "Arial", 17);
+            break;
+        case 2:
+            rmb = LabelTTF::create("仅需10元", "Arial", 17);
+            break;
+        case 3:
+        	rmb = LabelTTF::create("仅需12元", "Arial", 17);
+            break;
+        case 4:
+        case 5:
+        case 6:
+            rmb = LabelTTF::create("仅需16元", "Arial", 17);
+            break;
+        default:
+            break;
+    }
+    if(rmb)
+    {
+        rmb->setColor(Color3B(132, 138, 110));
+        rmb->setPosition(98, -136);
+        rmb->setOpacity(255);
+        this->addChild(rmb, 2);
+    }
 	return true;
 }
 
 void RewardDialog::CloseReward(Ref *sender)
 {
+	BUBBLE;
 	m_make->removeFromParentAndCleanup(true);
 	this->removeFromParentAndCleanup(true);
-	
+	TipWin::ShowTip(3);
 }
 
 RewardDialog::~RewardDialog()
@@ -101,22 +129,22 @@ void RewardDialog::LoadItem()
 	Label4->setPosition(-50,-110);
 
 	auto plashbg5 = Sprite::create("images/Scene/TipScene/itemGet/bg_light.png");
-	this->addChild(plashbg5);
+	this->addChild(plashbg5,1);
 	plashbg5->setScale(0.5f,0.5f);
 	plashbg5->setPosition(120,-40);
-	auto rote = RotateBy::create(2.f,360.0f);
-	auto rote1 = RotateBy::create(2.f,360.0f);
-	auto rote2 = RotateBy::create(2.f,360.0f);
+	auto rote = RotateBy::create(3.f,360.0f);
+	auto rote1 = RotateBy::create(3.f,360.0f);
+	auto rote2 = RotateBy::create(3.f,360.0f);
 	plashbg5->runAction(RepeatForever::create(rote));
 
 	auto plashbg6 = Sprite::create("images/Scene/TipScene/itemGet/bg_light.png");
-	this->addChild(plashbg6);
+	this->addChild(plashbg6,1);
 	plashbg6->setScale(0.5f,0.5f);
 	plashbg6->setPosition(240,-40);
 	plashbg6->runAction(RepeatForever::create(rote1));
 	
 	auto plashbg7 = Sprite::create("images/Scene/TipScene/itemGet/bg_light.png");
-	this->addChild(plashbg7);
+	this->addChild(plashbg7,1);
 	plashbg7->setScale(0.5f,0.5f);
 	plashbg7->setPosition(360,-40);
 	plashbg7->runAction(RepeatForever::create(rote2));
@@ -193,12 +221,31 @@ void RewardDialog::GetItem()
 	{
 		Player::getInstance()->setLoginGet(true);
 		int CurGet = Player::getInstance()->getGetReward();
+        switch (CurGet) {
+            case 0:
+                Player::getInstance()->AddGold(1888);
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            case 6:
+                break;
+            default:
+                break;
+        }
 		if(CurGet < 7)
 		{
-			CurGet += 1;
+			CurGet ++;
 			Player::getInstance()->setGetReward(CurGet);
 			Player::getInstance()->SavePlayInfo();
-
+             
 		}
 	}
 	CloseReward(nullptr);
